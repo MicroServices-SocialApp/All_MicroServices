@@ -14,9 +14,16 @@ jobs:
 
       - name: Pull latest submodule changes
         run: |
-          git submodule update --remote --merge
+          # 1. Initialize and fetch the latest code from microservices
+          git submodule update --init --recursive --remote
+          
+          # 2. Force each submodule to match the remote main branch exactly
+          # This bypasses the "unrelated histories" error
+          git submodule foreach 'git fetch origin main && git reset --hard origin/main'
+          
+          # 3. Commit the new pointer status to the parent repo
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
           git add .
-          git commit -m "chore: auto-update microservices" || echo "No changes"
+          git commit -m "chore: force update submodules to latest" || echo "No changes to commit"
           git push
