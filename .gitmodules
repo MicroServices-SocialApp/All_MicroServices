@@ -1,0 +1,12 @@
+[submodule "Post-API"]
+	path = Post-API
+	url = https://github.com/MicroServices-SocialApp/Post-API.git
+	branch = main
+[submodule "User-API"]
+	path = User-API
+	url = https://github.com/MicroServices-SocialApp/User-API.git
+	branch = main
+[submodule "Auth-API"]
+	path = Auth-API
+	url = https://github.com/MicroServices-SocialApp/Auth-API.git
+	branch = main

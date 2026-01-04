@@ -1,0 +1,79 @@
+services:
+  # --- USER API & DB ---
+  user-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${USER_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${USER_POSTGRES_DB_NAME}
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+
+  user-api:
+    build:
+      context: ./User-API
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${USER_POSTGRES_USERNAME}:${USER_POSTGRES_PASSWORD}@user-db:5432/${USER_POSTGRES_DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+    depends_on:
+      - user-db
+
+  # --- POST API & DB ---
+  post-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POST_POSTGRE_USERNAME}
+      POSTGRES_PASSWORD: ${POST_POSTGRE_PASSWORD}
+      POSTGRES_DB: ${POST_POSTGRE_DB_NAME}
+    volumes:
+      - post_db_data:/var/lib/postgresql/data
+
+  post-api:
+    build:
+      context: ./post-API
+    ports:
+      - "8002:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POST_POSTGRE_USERNAME}:${POST_POSTGRE_PASSWORD}@post-db:5432/${POST_POSTGRE_DB_NAME}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+    depends_on:
+      - post-db
+
+  #   # --- COMMENT API & DB ---
+  # comment-db:
+  #   image: postgres:17-alpine
+  #   environment:
+  #     POSTGRES_USER: post_admin
+  #     POSTGRES_PASSWORD: post_pass
+  #     POSTGRES_DB: post_db
+  #   volumes:
+  #     - post_db_data:/var/lib/postgresql/data
+
+  # comment-api:
+  #   build:
+  #     context: ./post-API
+  #   ports:
+  #     - "8003:8000"
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://post_admin:post_pass@post-db:5432/post_db
+  #   depends_on:
+  #     - post-db
+
+    # --- AUTH API ---
+  auth-api:
+    build:
+      context: ./Auth-API
+    ports:
+      - "8004:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: = ${ALGORITHM}
+
+volumes:
+  user_db_data:
+  post_db_data:
+  # comment_db_data:
