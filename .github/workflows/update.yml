@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN_FOR_ALL_MICROSERVICES }}
+          token: ${{ secrets.TOKEN_FOR_ALL_MICROSERVICES }}
           submodules: true
 
       - name: Pull latest submodule changes
