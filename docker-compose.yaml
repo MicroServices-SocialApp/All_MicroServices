@@ -25,9 +25,9 @@ services:
   post-db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: ${POST_POSTGRE_USERNAME}
-      POSTGRES_PASSWORD: ${POST_POSTGRE_PASSWORD}
-      POSTGRES_DB: ${POST_POSTGRE_DB_NAME}
+      POSTGRES_USER: ${POST_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POST_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POST_POSTGRES_DB_NAME}
     volumes:
       - post_db_data:/var/lib/postgresql/data
 
