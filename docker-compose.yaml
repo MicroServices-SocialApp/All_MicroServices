@@ -33,7 +33,7 @@ services:
 
   post-api:
     build:
-      context: ./post-API
+      context: ./Post-API
     ports:
       - "8002:8000"
     environment:
