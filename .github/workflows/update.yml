@@ -57,4 +57,4 @@ jobs:
         run: |
           # Use the environment variables defined at the top of the file
           # We overwrite the environment variables inside docker-compose via the shell
-          DATABASE_URL=$USER_DATABASE_URL docker-compose up -d --build
+          DATABASE_URL=$USER_DATABASE_URL docker compose up -d --build
