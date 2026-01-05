@@ -15,7 +15,7 @@ services:
     ports:
       - "8001:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://${USER_POSTGRES_USERNAME}:${USER_POSTGRES_PASSWORD}@user-db:5432/${USER_POSTGRES_DB_NAME}
+      DATABASE_URL: ${USER_DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
     depends_on:
@@ -37,7 +37,7 @@ services:
     ports:
       - "8002:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POST_POSTGRE_USERNAME}:${POST_POSTGRE_PASSWORD}@post-db:5432/${POST_POSTGRE_DB_NAME}
+      DATABASE_URL: ${POST_DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
     depends_on:
@@ -71,7 +71,7 @@ services:
       - "8004:8000"
     environment:
       SECRET_KEY: ${SECRET_KEY}
-      ALGORITHM: = ${ALGORITHM}
+      ALGORITHM: ${ALGORITHM}
 
 volumes:
   user_db_data:

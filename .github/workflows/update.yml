@@ -1,29 +1,60 @@
-name: Update Submodules
+name: Update and Deploy Microservices
+
 on:
   repository_dispatch:
     types: [microservice_updated]
+  workflow_dispatch: # Allows you to trigger this manually for testing
 
 jobs:
-  update:
+  update-and-deploy:
     runs-on: ubuntu-latest
+    
+    # --- 1. COMPOSE YOUR SECRETS HERE ---
+    env:
+      # Raw Secrets
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      
+      # User DB vars
+      USER_POSTGRES_USERNAME: ${{ secrets.USER_POSTGRES_USERNAME }}
+      USER_POSTGRES_PASSWORD: ${{ secrets.USER_POSTGRES_PASSWORD }}
+      USER_POSTGRES_DB_NAME: ${{ secrets.USER_POSTGRES_DB_NAME }}
+      # Composed User DB URL
+      USER_DATABASE_URL: postgresql+asyncpg://${{ secrets.USER_POSTGRES_USERNAME }}:${{ secrets.USER_POSTGRES_PASSWORD }}@user-db:5432/${{ secrets.USER_POSTGRES_DB_NAME }}
+      
+      # Post DB vars
+      POST_POSTGRE_USERNAME: ${{ secrets.POST_POSTGRE_USERNAME }}
+      POST_POSTGRE_PASSWORD: ${{ secrets.POST_POSTGRE_PASSWORD }}
+      POST_POSTGRE_DB_NAME: ${{ secrets.POST_POSTGRE_DB_NAME }}
+      # Composed Post DB URL
+      POST_DATABASE_URL: postgresql+asyncpg://${{ secrets.POST_POSTGRE_USERNAME }}:${{ secrets.POST_POSTGRE_PASSWORD }}@post-db:5432/${{ secrets.POST_POSTGRE_DB_NAME }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Parent Repo
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.TOKEN_FOR_ALL_MICROSERVICES }}
-          submodules: true
+          submodules: 'recursive'
+          fetch-depth: 0
 
-      - name: Pull latest submodule changes
+      - name: Update Submodules Safely
         run: |
-          # 1. Initialize and fetch the latest code from microservices
+          # Sync remote URLs and update pointers
           git submodule update --init --recursive --remote
           
-          # 2. Force each submodule to match the remote main branch exactly
-          # This bypasses the "unrelated histories" error
-          git submodule foreach 'git fetch origin main && git reset --hard origin/main'
+          # Ensure submodules are on the latest main without destroying untracked files
+          git submodule foreach 'git fetch origin main && git checkout main && git pull origin main'
           
-          # 3. Commit the new pointer status to the parent repo
+          # Commit the new pointers back to the main repo
           git config --global user.name "GitHub Action"
           git config --global user.email "actions@github.com"
           git add .
-          git commit -m "chore: force update submodules to latest" || echo "No changes to commit"
+          git commit -m "chore: update submodule pointers to latest" || echo "No changes to commit"
           git push
+
+      # --- 2. DEPLOYMENT STEP ---
+      - name: Deploy with Docker Compose
+        run: |
+          # Use the environment variables defined at the top of the file
+          # We overwrite the environment variables inside docker-compose via the shell
+          DATABASE_URL=$USER_DATABASE_URL docker-compose up -d --build
