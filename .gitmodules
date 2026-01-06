@@ -10,3 +10,7 @@
 	path = Auth-API
 	url = https://github.com/MicroServices-SocialApp/Auth-API.git
 	branch = main
+[submodule "Comment-API"]
+	path = Comment-API
+	url = https://github.com/MicroServices-SocialApp/Comment-API
+	branch = main
