@@ -1,5 +1,7 @@
 services:
+  #--------------------------------------------------
   # --- USER API & DB ---
+  #--------------------------------------------------
   user-db:
     image: postgres:17-alpine
     environment:
@@ -21,7 +23,10 @@ services:
     depends_on:
       - user-db
 
+
+  #--------------------------------------------------
   # --- POST API & DB ---
+  #--------------------------------------------------
   post-db:
     image: postgres:17-alpine
     environment:
@@ -43,27 +48,35 @@ services:
     depends_on:
       - post-db
 
-  #   # --- COMMENT API & DB ---
-  # comment-db:
-  #   image: postgres:17-alpine
-  #   environment:
-  #     POSTGRES_USER: post_admin
-  #     POSTGRES_PASSWORD: post_pass
-  #     POSTGRES_DB: post_db
-  #   volumes:
-  #     - post_db_data:/var/lib/postgresql/data
 
-  # comment-api:
-  #   build:
-  #     context: ./post-API
-  #   ports:
-  #     - "8003:8000"
-  #   environment:
-  #     DATABASE_URL: postgresql+asyncpg://post_admin:post_pass@post-db:5432/post_db
-  #   depends_on:
-  #     - post-db
+  #--------------------------------------------------
+  # --- COMMENT API & DB ---
+  #--------------------------------------------------
+  comment-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${COMMENT_POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${COMMENT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${COMMENT_POSTGRES_DB_NAME}
+    volumes:
+      - comment_db_data:/var/lib/postgresql/data
 
-    # --- AUTH API ---
+  comment-api:
+    build:
+      context: ./Comment-API
+    ports:
+      - "8003:8000"
+    environment:
+      DATABASE_URL: ${COMMENT_DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+    depends_on:
+      - comment-db
+
+
+  #--------------------------------------------------
+  # --- AUTH API ---
+  #--------------------------------------------------
   auth-api:
     build:
       context: ./Auth-API
@@ -76,4 +89,4 @@ services:
 volumes:
   user_db_data:
   post_db_data:
-  # comment_db_data:
+  comment_db_data:
