@@ -22,12 +22,22 @@ jobs:
       # Composed User DB URL
       USER_DATABASE_URL: postgresql+asyncpg://${{ secrets.USER_POSTGRES_USERNAME }}:${{ secrets.USER_POSTGRES_PASSWORD }}@user-db:5432/${{ secrets.USER_POSTGRES_DB_NAME }}
       
+
       # Post DB vars
       POST_POSTGRE_USERNAME: ${{ secrets.POST_POSTGRE_USERNAME }}
       POST_POSTGRE_PASSWORD: ${{ secrets.POST_POSTGRE_PASSWORD }}
       POST_POSTGRE_DB_NAME: ${{ secrets.POST_POSTGRE_DB_NAME }}
       # Composed Post DB URL
       POST_DATABASE_URL: postgresql+asyncpg://${{ secrets.POST_POSTGRE_USERNAME }}:${{ secrets.POST_POSTGRE_PASSWORD }}@post-db:5432/${{ secrets.POST_POSTGRE_DB_NAME }}
+
+
+      # Post DB vars
+      COMMENT_POSTGRES_USERNAME: ${{ secrets.COMMENT_POSTGRES_USERNAME }}
+      COMMENT_POSTGRES_PASSWORD: ${{ secrets.COMMENT_POSTGRES_PASSWORD }}
+      COMMENT_POSTGRES_DB_NAME: ${{ secrets.COMMENT_POSTGRES_DB_NAME }}
+      # Composed Post DB URL
+      COMMENT_DATABASE_URL: postgresql+asyncpg://${{ secrets.COMMENT_POSTGRES_USERNAME }}:${{ secrets.COMMENT_POSTGRES_PASSWORD }}@post-db:5432/${{ secrets.COMMENT_POSTGRES_DB_NAME }}
+
 
     steps:
       - name: Checkout Parent Repo
