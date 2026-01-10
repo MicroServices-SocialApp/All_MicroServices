@@ -67,7 +67,7 @@ services:
     ports:
       - "8003:8000"
     environment:
-      DATABASE_URL: ${COMMENT_DATABASE_URL}
+      COMMENT_DATABASE_URL: ${COMMENT_DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
     depends_on:
