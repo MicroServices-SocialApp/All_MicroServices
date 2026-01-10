@@ -173,4 +173,4 @@ images
 #database
 *.db
 
-dev.sh
+*.sh
