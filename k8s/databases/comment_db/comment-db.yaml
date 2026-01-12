@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comment-db
+  template:
+    metadata:
+      labels:
+        app: comment-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17-alpine
+        env:
+
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_USERNAME
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_DB_NAME
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: comment-db-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: comment-db-storage
+        persistentVolumeClaim:
+          claimName: comment-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-db
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: comment-db

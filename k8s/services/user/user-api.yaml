@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-api
+spec:
+  replicas: 1 # replicas is managed by HPA, so we start with 1
+  selector:
+    matchLabels:
+      app: user-api
+  template:
+    metadata:
+      labels:
+        app: user-api
+    spec:
+      containers:
+      - name: user-api
+        image: ghcr.io/MicroServices-SocialApp/All_MicroServices/User-API:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"   # 10% of a CPU core
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: user-api-secrets
+              key: POSTGRES_USERNAME
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: user-api-secrets
+              key: POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: user-api-secrets
+              key: POSTGRES_DB_NAME
+        # Constructing the URL: user-db is the service name from user-db.yaml
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@user-db:5432/$(POSTGRES_DB_NAME)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: user-api

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comment-api
+spec:
+  replicas: 1 # replicas is managed by HPA, so we start with 1
+  selector:
+    matchLabels:
+      app: comment-api
+  template:
+    metadata:
+      labels:
+        app: comment-api
+    spec:
+      containers:
+      - name: comment-api
+        image: ghcr.io/MicroServices-SocialApp/All_MicroServices/Comment-API:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"   # 10% of a CPU core
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_USERNAME
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_DB_NAME
+        # Constructing the URL: comment-db is the service name from comment-db.yaml
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@comment-db:5432/$(POSTGRES_DB_NAME)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comment-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: comment-api

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-api
+spec:
+  replicas: 1 # replicas is managed by HPA, so we start with 1
+  selector:
+    matchLabels:
+      app: auth-api
+  template:
+    metadata:
+      labels:
+        app: auth-api
+    spec:
+      containers:
+      - name: auth-api
+        image: ghcr.io/MicroServices-SocialApp/All_MicroServices/Auth-API:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"   # 10% of a CPU core
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: auth-api

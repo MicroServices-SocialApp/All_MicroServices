@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: post-db
+  template:
+    metadata:
+      labels:
+        app: post-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17-alpine
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_USERNAME
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_DB_NAME
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: post-db-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: post-db-storage
+        persistentVolumeClaim:
+          claimName: post-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-db
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: post-db
