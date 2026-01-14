@@ -72,6 +72,8 @@ services:
       ALGORITHM: ${ALGORITHM}
     depends_on:
       - comment-db
+    volumes:
+      - ./Comment-API/exc/logs:/app/exc/logs
 
 
   #--------------------------------------------------
