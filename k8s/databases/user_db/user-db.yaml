@@ -20,7 +20,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: user-api-secrets
-              key: POSTGRES_USER
+              key: POSTGRES_USERNAME
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -30,7 +30,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: user-api-secrets
-              key: POSTGRES_DB
+              key: POSTGRES_DB_NAME
         ports:
         - containerPort: 5432
         volumeMounts:
