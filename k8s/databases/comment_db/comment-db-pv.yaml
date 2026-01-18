@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: comment-db-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain # Keeps data even if PVC is deleted
+  hostPath:
+    path: /run/desktop/mnt/host/c/k8s-data/comment-db # CHANGE THIS to a real path on your machine
+  storageClassName: manual
+  
