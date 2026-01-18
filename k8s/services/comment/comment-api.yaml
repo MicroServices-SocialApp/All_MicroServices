@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: comment-api
 spec:
-  replicas: 1 # replicas is managed by HPA, so we start with 1
   selector:
     matchLabels:
       app: comment-api
@@ -12,9 +11,38 @@ spec:
       labels:
         app: comment-api
     spec:
+      initContainers:
+      - name: db-migration
+        image: comment-api:local
+        imagePullPolicy: Never
+        command: ["alembic", "upgrade", "head"]
+        env:
+
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_USERNAME
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: POSTGRES_DB_NAME
+        - name: COMMENT_DATABASE_URL
+          value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@comment-db:5432/$(POSTGRES_DB)"
+      # --- End of InitContainer ---
+      
       containers:
       - name: comment-api
-        image: ghcr.io/MicroServices-SocialApp/All_MicroServices/Comment-API:latest
+        image: comment-api:local
+        imagePullPolicy: Never
         ports:
         - containerPort: 8000
         resources:
@@ -25,6 +53,18 @@ spec:
             cpu: "500m"
             memory: "512Mi"
         env:
+
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: SECRET_KEY
+        
+        - name: ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: comment-api-secrets
+              key: ALGORITHM
 
         - name: POSTGRES_USERNAME
           valueFrom:
@@ -44,8 +84,8 @@ spec:
               name: comment-api-secrets
               key: POSTGRES_DB_NAME
         # Constructing the URL: comment-db is the service name from comment-db.yaml
-        - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@comment-db:5432/$(POSTGRES_DB_NAME)"
+        - name: COMMENT_DATABASE_URL
+          value: "postgresql+asyncpg://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@comment-db:5432/$(POSTGRES_DB_NAME)"
 ---
 apiVersion: v1
 kind: Service

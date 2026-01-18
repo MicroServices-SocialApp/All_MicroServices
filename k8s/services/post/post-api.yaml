@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: post-api
 spec:
-  replicas: 1 # replicas is managed by HPA, so we start with 1
   selector:
     matchLabels:
       app: post-api
@@ -12,9 +11,39 @@ spec:
       labels:
         app: post-api
     spec:
+      initContainers:
+      - name: db-migration
+        image: post-api:local
+        imagePullPolicy: Never
+        command: ["alembic", "upgrade", "head"]
+        env:
+
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_USERNAME
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: POSTGRES_DB_NAME
+              
+        - name: DATABASE_URL
+          value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@post-db:5432/$(POSTGRES_DB)"
+      # --- End of InitContainer ---
+      
       containers:
       - name: post-api
-        image: ghcr.io/MicroServices-SocialApp/All_MicroServices/Post-API:latest
+        image: post-api:local
+        imagePullPolicy: Never
         ports:
         - containerPort: 8000
         resources:
@@ -25,6 +54,18 @@ spec:
             cpu: "500m"
             memory: "512Mi"
         env:
+
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: SECRET_KEY
+        
+        - name: ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: post-api-secrets
+              key: ALGORITHM
 
         - name: POSTGRES_USERNAME
           valueFrom:
@@ -45,7 +86,7 @@ spec:
               key: POSTGRES_DB_NAME
         # Constructing the URL: post-db is the service name from post-db.yaml
         - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@post-db:5432/$(POSTGRES_DB_NAME)"
+          value: "postgresql+asyncpg://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@post-db:5432/$(POSTGRES_DB_NAME)"
 ---
 apiVersion: v1
 kind: Service
