@@ -5,6 +5,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: manual
+  volumeName: comment-db-pv
   resources:
     requests:
       storage: 5Gi # Change this based on your data needs
