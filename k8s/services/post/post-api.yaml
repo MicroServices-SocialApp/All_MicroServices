@@ -10,42 +10,29 @@ spec:
     metadata:
       labels:
         app: post-api
-    spec:
-      initContainers:
-      - name: db-migration
-        image: post-api:local
-        imagePullPolicy: Never
-        command: ["alembic", "upgrade", "head"]
-        env:
-
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: post-api-secrets
-              key: POSTGRES_USERNAME
-
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: post-api-secrets
-              key: POSTGRES_PASSWORD
-
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: post-api-secrets
-              key: POSTGRES_DB_NAME
-              
-        - name: DATABASE_URL
-          value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@post-db:5432/$(POSTGRES_DB)"
-      # --- End of InitContainer ---
-      
+    spec:      
       containers:
       - name: post-api
         image: post-api:local
         imagePullPolicy: Never
         ports:
         - containerPort: 8000
+
+        readinessProbe:
+          httpGet:
+            path: health   # Much lighter than /read_all_users
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5  # Check every 5s during the stress test
+          failureThreshold: 3
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 20
+
         resources:
           requests:
             cpu: "100m"   # 10% of a CPU core
