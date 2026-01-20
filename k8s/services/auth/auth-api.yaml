@@ -19,11 +19,11 @@ spec:
         - containerPort: 8000
         resources:
           requests:
-            cpu: "100m"   # 10% of a CPU core
-            memory: "128Mi"
+            cpu: "500m"   # 50% of a CPU core
+            memory: "640Mi"
           limits:
-            cpu: "500m"
-            memory: "512Mi"
+            cpu: "2000"
+            memory: "1024Mi"
         env:
 
         - name: SECRET_KEY
