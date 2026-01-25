@@ -37,10 +37,15 @@ class MicroservicesUser(HttpUser):
             else:
                 response.failure(f"Failed to login: {response.text}")
 
-    @task(5)
+    @task(4)
     def view_posts(self):
         """Reads all posts. Most common action (Weight: 5)"""
         self.client.get("/post/read_all_posts?limit=10")
+
+    @task(4)
+    def view_comments(self):
+        """Reads all posts. Most common action (Weight: 5)"""
+        self.client.get("/comment/read_all")
 
     @task(2)
     def create_post_and_comment(self):
