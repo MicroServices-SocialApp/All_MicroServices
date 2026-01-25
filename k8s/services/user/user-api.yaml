@@ -24,8 +24,8 @@ spec:
             port: 8000
           initialDelaySeconds: 10
           periodSeconds: 5  # Check every 5s during the stress test
-          failureThreshold: 3
-          timeoutSeconds: 3
+          failureThreshold: 5
+          timeoutSeconds: 5
         livenessProbe:
           httpGet:
             path: health
@@ -35,11 +35,11 @@ spec:
 
         resources:
           requests:
-            cpu: "300m"   # 30% of a CPU core
-            memory: "256Mi"
+            cpu: "100m"   # 10% of a CPU core
+            memory: "128Mi"
           limits:
-            cpu: "1000m"
-            memory: "512Mi"
+            cpu: "200m"
+            memory: "256Mi"
         env:
 
         - name: SECRET_KEY
