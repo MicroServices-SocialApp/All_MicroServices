@@ -1,0 +1,47 @@
+# Configuration for User DB
+user-db:
+  enabled: true
+  fullnameOverride: "user-db"
+  auth:
+    username: "user_service"
+    existingSecret: "user-api-secrets" # Uses your existing ExternalSecrets
+    secretKeys:
+      adminPasswordKey: "POSTGRES_PASSWORD"
+      userPasswordKey: "POSTGRES_PASSWORD"
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "standard" # Cloud standard (gp2, etc.)
+
+# Configuration for Post DB
+post-db:
+  enabled: true
+  fullnameOverride: "post-db"
+  auth:
+    username: "post_service"
+    existingSecret: "post-api-secrets" # Uses your existing ExternalSecrets
+    secretKeys:
+      adminPasswordKey: "POSTGRES_PASSWORD"
+      userPasswordKey: "POSTGRES_PASSWORD"
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "standard" # Cloud standard (gp2, etc.)
+
+# Configuration for Comment DB
+comment-db:
+  enabled: true
+  fullnameOverride: "comment-db"
+  auth:
+    username: "comment_service"
+    existingSecret: "comment-api-secrets" # Uses your existing ExternalSecrets
+    secretKeys:
+      adminPasswordKey: "POSTGRES_PASSWORD"
+      userPasswordKey: "POSTGRES_PASSWORD"
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: "standard" # Cloud standard (gp2, etc.)
