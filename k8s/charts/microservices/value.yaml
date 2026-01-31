@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: python-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerPort: 8000
+
+service:
+  type: ClusterIP
+  port: 80
+
+env: 
+  PYTHONUNBUFFERED: "1"
