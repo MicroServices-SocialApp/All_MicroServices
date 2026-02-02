@@ -1,0 +1,39 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - databases/user_db/user-db.yaml
+  - databases/user_db/user-db-pv.yaml
+  - databases/user_db/user-db-pvc.yaml
+
+  - databases/post_db/post-db.yaml
+  - databases/post_db/post-db-pv.yaml
+  - databases/post_db/post-db-pvc.yaml
+
+  - databases/comment_db/comment-db.yaml
+  - databases/comment_db/comment-db-pv.yaml
+  - databases/comment_db/comment-db-pvc.yaml
+  #----------------------------------------------------------
+  - jobs/user_db_migration.yaml
+  - jobs/post_db_migration.yaml
+  - jobs/comment_db_migration.yaml
+  #----------------------------------------------------------
+  - services/user/user-api-hpa.yaml
+  - services/user/user-api.yaml
+
+  - services/post/post-api-hpa.yaml
+  - services/post/post-api.yaml
+
+  - services/comment/comment-api-hpa.yaml
+  - services/comment/comment-api.yaml
+
+  - services/auth/auth-api-hpa.yaml
+  - services/auth/auth-api.yaml
+  #----------------------------------------------------------
+  - secrets/user-api-sealed.yaml
+  - secrets/post-api-sealed.yaml
+  - secrets/comment-api-sealed.yaml
+  - secrets/auth-api-sealed.yaml
+  #----------------------------------------------------------
+  - ingress.yaml
