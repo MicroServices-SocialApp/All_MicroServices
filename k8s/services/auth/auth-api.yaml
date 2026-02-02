@@ -17,6 +17,7 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 8000
+        
         resources:
           requests:
             cpu: "100m"   # 10% of a CPU core

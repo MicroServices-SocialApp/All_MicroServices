@@ -20,10 +20,10 @@ spec:
 
         readinessProbe:
           httpGet:
-            path: health   # Much lighter than /read_all_users
+            path: health
             port: 8000
           initialDelaySeconds: 10
-          periodSeconds: 5  # Check every 5s during the stress test
+          periodSeconds: 5
           failureThreshold: 5
           timeoutSeconds: 5
         livenessProbe:
@@ -35,7 +35,7 @@ spec:
 
         resources:
           requests:
-            cpu: "200m"   # 10% of a CPU core
+            cpu: "200m"   # 20% of a CPU core
             memory: "128Mi"
           limits:
             cpu: "300m"
