@@ -1,0 +1,39 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - k8s/databases/user_db/user-db.yaml
+  - k8s/databases/user_db/user-db-pv.yaml
+  - k8s/databases/user_db/user-db-pvc.yaml
+
+  - k8s/databases/post_db/post-db.yaml
+  - k8s/databases/post_db/post-db-pv.yaml
+  - k8s/databases/post_db/post-db-pvc.yaml
+
+  - k8s/databases/comment_db/comment-db.yaml
+  - k8s/databases/comment_db/comment-db-pv.yaml
+  - k8s/databases/comment_db/comment-db-pvc.yaml
+  #----------------------------------------------------------
+  - k8s/jobs/user_db_migration.yaml
+  - k8s/jobs/post_db_migration.yaml
+  - k8s/jobs/comment_db_migration.yaml
+  #----------------------------------------------------------
+  - k8s/services/user/user-api-hpa.yaml
+  - k8s/services/user/user-api.yaml
+
+  - k8s/services/post/post-api-hpa.yaml
+  - k8s/services/post/post-api.yaml
+
+  - k8s/services/comment/comment-api-hpa.yaml
+  - k8s/services/comment/comment-api.yaml
+
+  - k8s/services/auth/auth-api-hpa.yaml
+  - k8s/services/auth/auth-api.yaml
+  #----------------------------------------------------------
+  - k8s/secrets/user-api-sealed.yaml
+  - k8s/secrets/post-api-sealed.yaml
+  - k8s/secrets/comment-api-sealed.yaml
+  - k8s/secrets/auth-api-sealed.yaml
+  #----------------------------------------------------------
+  - k8s/ingress.yaml
