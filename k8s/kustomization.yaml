@@ -37,3 +37,4 @@ resources:
   - secrets/auth-api-sealed.yaml
   #----------------------------------------------------------
   - ingress.yaml
+  - argo_application.yaml

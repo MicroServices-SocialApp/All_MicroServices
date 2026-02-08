@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: microservices-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # 1. Your Parent Repo URL
+    repoURL: 'https://github.com/MicroServices-SocialApp/All_MicroServices.git'
+    
+    # 2. The path inside the repo where kustomization.yaml lives
+    path: k8s
+    
+    # 3. The branch to track
+    targetRevision: main
+  
+  destination:
+    # Deploy to the cluster ArgoCD is running in
+    server: 'https://kubernetes.default.svc'
+    
+    # The namespace where your apps (User API, Post API) should live
+    namespace: default 
+
+  # 4. Sync Policy: This makes it automatic!
+  syncPolicy:
+    automated:
+      prune: true    # Delete resources in cluster if they are removed from Git
+      selfHeal: true # specific to drift: if someone manually changes k8s, revert it to Git state
+    syncOptions:
+      - CreateNamespace=true
