@@ -174,3 +174,5 @@ images
 *.db
 
 *.sh
+
+.argocd-password
