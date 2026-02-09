@@ -36,5 +36,7 @@ resources:
   - secrets/comment-api-sealed.yaml
   - secrets/auth-api-sealed.yaml
   #----------------------------------------------------------
+  - argocd/argo_application.yaml
+  #----------------------------------------------------------
   - ingress.yaml
-  - argo_application.yaml
+  
