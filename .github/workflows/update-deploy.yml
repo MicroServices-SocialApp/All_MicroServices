@@ -13,6 +13,7 @@ jobs:
 
     env:
       SERVICE: ${{ github.event.client_payload.service_name }}
+      LOWERCASE_SERVICE: ${{ github.event.client_payload.lowercase_name}}
       SHA: ${{ github.event.client_payload.sha}}
     
     steps:
@@ -54,13 +55,13 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ env.SERVICE }}
+          context: ./${{ env.LOWERCASE_SERVICE }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}:${{ env.SHA }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}:buildcache,mode=max
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:${{ env.SHA }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache,mode=max
 
       - name: Update Kustomize Image Tag
         run: |
@@ -70,12 +71,12 @@ jobs:
 
           # Update the tag in k8s/kustomization.yaml
           cd k8s
-          echo "Updating image tag for $SERVICE to $SHA"
+          echo "Updating image tag for $LOWERCASE_SERVICE to $SHA"
           
           # Make sure the Kustomization file exists before editing
           if [ -f "kustomization.yaml" ]; then
-             echo "Updating image tag for $SERVICE to $SHA"
-             kustomize edit set image ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE }}:${{ env.SHA }}
+             echo "Updating image tag for $LOWERCASE_SERVICE to $SHA"
+             kustomize edit set image ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:${{ env.SHA }}
           else
              echo "Error: k8s/kustomization.yaml not found!"
              exit 1
