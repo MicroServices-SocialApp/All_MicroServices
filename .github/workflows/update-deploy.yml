@@ -55,7 +55,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ env.LOWERCASE_SERVICE }}
+          context: ./${{ env.SERVICE }}
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:${{ env.SHA }}
