@@ -1,5 +1,10 @@
 name: Update and Deploy Microservices
 
+# Others workflow will wait in a queue until the running one finishes.
+concurrency: 
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 on:
   repository_dispatch:
     types: [microservice_updated]
