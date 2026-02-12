@@ -57,7 +57,28 @@ jobs:
       - name: set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Push Docker Image
+
+      - name: Build Docker Image (Local Only)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ env.SERVICE }}
+          load: true  # This loads the image into the local Docker daemon instead of pushing
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:temp-scan
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache
+
+      - name: Docker Scout Scan
+        uses: docker/scout-action@v1
+        env:
+          DOCKER_STEP_SUMMARY: true  # This activates the visual report
+        with:
+          command: cves
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:temp-scan
+          only-severities: critical,high
+          only-fixed: true
+          exit-code: true
+
+      - name: Push Verified Image to Docker Hub
+        if: success()
         uses: docker/build-push-action@v6
         with:
           context: ./${{ env.SERVICE }}
@@ -67,17 +88,6 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:latest
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache,mode=max
-
-      - name: Docker Scout Scan
-        uses: docker/scout-action@v1
-        env:
-          DOCKER_STEP_SUMMARY: true  # This activates the visual report
-        with:
-          command: cves
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/user-api:latest
-          only-severities: critical,high
-          exit-code: true
-
 
       - name: Update Kustomize Image Tag
         run: |
