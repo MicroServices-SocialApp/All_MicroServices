@@ -10,7 +10,7 @@ spec:
     repoURL: 'https://github.com/MicroServices-SocialApp/All_MicroServices.git'
     
     # 2. The path inside the repo where kustomization.yaml lives
-    path: k8s
+    path: k8s/
     
     # 3. The branch to track
     targetRevision: main
