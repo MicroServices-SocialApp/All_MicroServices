@@ -68,6 +68,17 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.LOWERCASE_SERVICE }}:buildcache,mode=max
 
+      - name: Docker Scout Scan
+        uses: docker/scout-action@v1
+        env:
+          DOCKER_STEP_SUMMARY: true  # This activates the visual report
+        with:
+          command: cves
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/user-api:latest
+          only-severities: critical,high
+          exit-code: true
+
+
       - name: Update Kustomize Image Tag
         run: |
           #install kustomize
