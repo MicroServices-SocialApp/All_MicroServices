@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: user-api
 spec:
+
   selector:
     matchLabels:
       app: user-api
@@ -10,11 +11,12 @@ spec:
     metadata:
       labels:
         app: user-api
+        
     spec:
       containers:
       - name: user-api
-        image: user-api:local
-        imagePullPolicy: Never
+        image: louischatain25/user-api:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
 
@@ -40,8 +42,8 @@ spec:
           limits:
             cpu: "200m"
             memory: "256Mi"
-        env:
 
+        env:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: comment-api
+
 spec:
   selector:
     matchLabels:
@@ -10,11 +11,12 @@ spec:
     metadata:
       labels:
         app: comment-api
+
     spec:
       containers:
       - name: comment-api
-        image: comment-api:local
-        imagePullPolicy: Never
+        image: louischatain25/comment-api:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
 
@@ -40,8 +42,8 @@ spec:
           limits:
             cpu: "300m"
             memory: "256Mi"
-        env:
 
+        env:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:

@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: post-api
 spec:
+
   selector:
     matchLabels:
       app: post-api
@@ -10,11 +11,12 @@ spec:
     metadata:
       labels:
         app: post-api
-    spec:      
+
+    spec:
       containers:
       - name: post-api
-        image: post-api:local
-        imagePullPolicy: Never
+        image: louischatain25/post-api:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
 
@@ -40,8 +42,8 @@ spec:
           limits:
             cpu: "300m"
             memory: "256Mi"
-        env:
 
+        env:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:

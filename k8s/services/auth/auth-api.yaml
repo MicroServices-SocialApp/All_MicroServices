@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-api
+
 spec:
   selector:
     matchLabels:
@@ -10,11 +11,12 @@ spec:
     metadata:
       labels:
         app: auth-api
+
     spec:
       containers:
       - name: auth-api
-        image: auth-api:local
-        imagePullPolicy: Never
+        image: louischatain25/auth-api:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         
@@ -25,8 +27,8 @@ spec:
           limits:
             cpu: "200"
             memory: "256Mi"
-        env:
 
+        env:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
@@ -38,7 +40,6 @@ spec:
             secretKeyRef:
               name: auth-api-secrets
               key: ALGORITHM
-
 ---
 apiVersion: v1
 kind: Service
