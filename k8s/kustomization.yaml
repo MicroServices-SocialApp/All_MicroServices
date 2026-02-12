@@ -31,6 +31,9 @@ resources:
 - argocd/argo_ingress.yaml
 - ingress.yaml
 images:
+- name: louischatain25/auth-api
+  newName: louischatain25/auth-api
+  newTag: 0f6bef4e3d221c93c9cba8b4a4ba2a1ca1a98511
 - name: louischatain25/user-api
   newName: louischatain25/user-api
   newTag: 9c5223b235bf304e17f35e9dbea9f0eb18f4ab30
