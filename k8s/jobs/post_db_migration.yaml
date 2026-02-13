@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: migration
-        image: post-api:local
+        image: louischatain25/post-api:latest
         command: ["alembic", "upgrade", "head"]
         env:
         - name: POSTGRES_USER
