@@ -29,17 +29,20 @@ resources:
 - secrets/auth-api-sealed.yaml
 - argocd/argo_application.yaml
 - argocd/argo_ingress.yaml
+- observability
+# - ingress_configmap.yaml
+- namespaces.yaml
 - ingress.yaml
-images:
-- name: louischatain25/auth-api
-  newName: louischatain25/auth-api
-  newTag: 0f6bef4e3d221c93c9cba8b4a4ba2a1ca1a98511
-- name: louischatain25/comment-api
-  newName: louischatain25/comment-api
-  newTag: 184d1f441dab08f29c537cdeb8ec4ed164dd4664
-- name: louischatain25/post-api
-  newName: louischatain25/post-api
-  newTag: fda84bc3658c4d5e894834e0b676a4dfb41e645c
-- name: louischatain25/user-api
-  newName: louischatain25/user-api
-  newTag: e8604696d6096168f7dc55f2c6b0ded77cbf6856
+# images:
+# - name: louischatain25/auth-api
+#   newName: louischatain25/auth-api
+#   newTag: 0f6bef4e3d221c93c9cba8b4a4ba2a1ca1a98511
+# - name: louischatain25/comment-api
+#   newName: louischatain25/comment-api
+#   newTag: 184d1f441dab08f29c537cdeb8ec4ed164dd4664
+# - name: louischatain25/post-api
+#   newName: louischatain25/post-api
+#   newTag: fda84bc3658c4d5e894834e0b676a4dfb41e645c
+# - name: louischatain25/user-api
+#   newName: louischatain25/user-api
+#   newTag: e8604696d6096168f7dc55f2c6b0ded77cbf6856
