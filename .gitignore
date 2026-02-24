@@ -176,3 +176,5 @@ images
 *.sh
 
 .argocd-password
+
+k8s/observability/tmp/
