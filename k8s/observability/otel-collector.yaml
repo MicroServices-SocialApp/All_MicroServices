@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: observability
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:latest
+        args: ["--config=/etc/otelcol-contrib/config.yaml"]
+        ports:
+        - containerPort: 4317 # gRPC
+        - containerPort: 4318 # HTTP
+        - containerPort: 8888 # Metrics for the collector itself
+        volumeMounts:
+        - name: otel-config-vol # Matches volume name below
+          mountPath: /etc/otelcol-contrib/config.yaml
+          subPath: otel-config.yaml
+      volumes:
+      - name: otel-config-vol # Changed to match mount
+        configMap:
+          name: otel-collector-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector
+  namespace: observability
+  labels:
+    app: otel-collector # Added label for the monitor to find
+spec:
+  ports:
+  - name: otlp-grpc
+    port: 4317
+  - name: otlp-http
+    port: 4318
+  - name: metrics # <--- Add this for Prometheus!
+    port: 8888
+    targetPort: 8888
+  selector:
+    app: otel-collector

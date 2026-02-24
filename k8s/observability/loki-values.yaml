@@ -1,0 +1,25 @@
+loki:
+  enabled: true
+  isDefault: false
+  persistence:
+    enabled: true
+    size: 10Gi # Good practice to define this early
+    storageClassName: hostpath # Explicitly tell it to use Docker Desktop's default
+  config:
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 336h # 14 days
+      
+promtail:
+  enabled: true
+  config:
+    clients:
+      - url: http://loki.observability.svc.cluster.local:3100/loki/api/v1/push
+
+# You've already done this, which is correct!
+grafana:
+  enabled: false
+  # sidecar:
+  #   datasources:
+  #     enabled: true
+  #     defaultDatasourceEnabled: false

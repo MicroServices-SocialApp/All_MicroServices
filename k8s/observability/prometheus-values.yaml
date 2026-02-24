@@ -1,0 +1,42 @@
+# 1. Allow the OTel Collector to push metrics here
+prometheus:
+  prometheusSpec:
+    enableRemoteWriteReceiver: true
+
+grafana:
+  adminPassword: "admin"  # Now it will always be 'admin'
+  enabled: true
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      namespace: observability
+      url: http://loki:3100
+      access: proxy
+      isDefault: false
+      jsonData:
+        derivedFields:
+          - datasourceUid: tempo
+            matcherRegex: "trace_id=(\\w+)"
+            name: TraceID
+            # This turns the ID in your logs into a clickable link to Tempo
+            url: '$${__value.raw}'
+
+    - name: Tempo
+      type: tempo
+      uid: tempo
+      namespace: observability
+      url: http://tempo:3100
+      access: proxy
+      isDefault: false
+      jsonData:
+        httpMethod: GET
+        # This allows Tempo to find the logs related to a specific trace
+        lokiSearch:
+          datasourceUid: Loki
+        nodeGraph:
+          enabled: true
+        # This creates the magical "Logs for this span" button in Grafana
+        tracesToLogsV2:
+          datasourceUid: Loki
+          tags: [{key: 'service.name', value: 'app'}]

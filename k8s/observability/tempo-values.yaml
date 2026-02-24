@@ -1,0 +1,36 @@
+tempo:
+  repository: grafana/tempo
+  tag: "2.10.1" # Use a stable recent version
+  
+  # This section configures the internal Tempo logic
+  config: |
+    multitenancy_enabled: false
+    compactor:
+      compaction:
+        block_retention: 24h
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+
+  service:
+  type: ClusterIP
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+    - name: prom-metrics
+      port: 3100
+      targetPort: 3100

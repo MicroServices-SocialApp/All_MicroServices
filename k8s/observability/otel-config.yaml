@@ -1,0 +1,50 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 70
+    spike_limit_percentage: 30
+
+exporters:
+  otlp/tempo:
+    endpoint: "tempo.observability.svc.cluster.local:4317"
+    tls:
+      insecure: true
+  
+  loki:
+    # UPDATED: Matches the loki-stack service name
+    endpoint: "http://loki-loki-stack.observability.svc.cluster.local:3100/loki/api/v1/push"
+  
+  prometheusremotewrite:
+    # UPDATED: Common service name for the Prometheus Operator
+    endpoint: "http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
+    resource_to_telemetry_conversion:
+      enabled: true # This makes your 'service.name' appear as a label in Prometheus!
+
+service:
+  telemetry:
+    metrics:
+      address: 0.0.0.0:8888 # This opens the port for the ServiceMonitor
+  # Add internal health monitoring
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheusremotewrite]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [loki]

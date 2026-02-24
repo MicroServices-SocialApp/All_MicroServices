@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability
+
+helmGlobals:
+  chartHome: /tmp/charts
+
+helmCharts:
+  - name: kube-prometheus-stack
+    repo: https://prometheus-community.github.io/helm-charts
+    releaseName: prometheus
+    namespace: observability
+    version: 56.6.2
+    valuesFile: prometheus-values.yaml
+  - name: loki-stack
+    repo: https://grafana.github.io/helm-charts
+    releaseName: loki
+    version: 2.10.2
+    valuesFile: loki-values.yaml
+  - name: tempo
+    repo: https://grafana.github.io/helm-charts
+    releaseName: tempo
+    version: 1.7.2
+    valuesFile: tempo-values.yaml
+
+resources:
+- grafana_ingress.yaml
+- otel-collector.yaml
+- service-monitor.yaml
+
+configMapGenerator:
+  - name: otel-collector-conf
+    files:
+      - otel-collector-config.yaml=otel-config.yaml
