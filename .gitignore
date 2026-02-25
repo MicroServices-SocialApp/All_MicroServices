@@ -173,7 +173,8 @@ images
 #database
 *.db
 
-*.sh
+upgrade.sh
+all_api.sh
 
 .argocd-password
 
