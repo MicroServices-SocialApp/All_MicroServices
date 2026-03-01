@@ -2,6 +2,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# - observability
+# - namespaces.yaml
 resources:
 - databases/user_db/user-db.yaml
 - databases/user_db/user-db-pv.yaml
@@ -29,8 +31,6 @@ resources:
 - secrets/auth-api-sealed.yaml
 - argocd/argo_application.yaml
 - argocd/argo_ingress.yaml
-# - observability
-# - namespaces.yaml
 - ingress.yaml
 images:
 - name: louischatain25/auth-api
@@ -38,7 +38,7 @@ images:
   newTag: 0f6bef4e3d221c93c9cba8b4a4ba2a1ca1a98511
 - name: louischatain25/comment-api
   newName: louischatain25/comment-api
-  newTag: 7c303effa52326f664d21a8800e6b08f74f40b22
+  newTag: ffb84cca02af4eeb5c63d8e43af7b33ee6aa3d42
 - name: louischatain25/post-api
   newName: louischatain25/post-api
   newTag: fda84bc3658c4d5e894834e0b676a4dfb41e645c
