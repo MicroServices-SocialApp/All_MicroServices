@@ -2,7 +2,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# - ingress_configmap.yaml
 resources:
 - databases/user_db/user-db.yaml
 - databases/user_db/user-db-pv.yaml
@@ -30,8 +29,8 @@ resources:
 - secrets/auth-api-sealed.yaml
 - argocd/argo_application.yaml
 - argocd/argo_ingress.yaml
-- observability
-- namespaces.yaml
+# - observability
+# - namespaces.yaml
 - ingress.yaml
 images:
 - name: louischatain25/auth-api
