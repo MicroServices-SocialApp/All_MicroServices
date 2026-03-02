@@ -6,26 +6,28 @@ if [ "$1" == "--clean" ]; then
     # 1. Delete the main applications first
     # We use build | delete to ensure Helm-generated resources are identified
     echo "Stopping applications and observability stack..."
-    kustomize build k8s/ --enable-helm | kubectl delete -f - --ignore-not-found --timeout=60s
+    # kustomize build k8s/ --enable-helm | kubectl delete -f - --ignore-not-found --timeout=60s
+    kubectl delete -k k8s/
 
     # 2. Specifically target the "Heavyweights"
     # Helm deployments like Prometheus and Loki often have webhooks that block deletion
     echo "Cleaning up CRDs and Webhooks..."
     # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/ --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagerconfigs.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagers.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-probes.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusagents.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheuses.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusrules.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-scrapeconfigs.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml --ignore-not-found
-    kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-thanosrulers.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagerconfigs.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagers.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-probes.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusagents.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheuses.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusrules.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-scrapeconfigs.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-thanosrulers.yaml --ignore-not-found
 
     kubectl delete mutatingwebhookconfigurations.admissionregistration.k8s.io -l app.kubernetes.io/instance=prometheus --ignore-not-found
     kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io -l app.kubernetes.io/instance=prometheus --ignore-not-found
-
+    kubectl delete validatingwebhookconfiguration prometheus-kube-stack-admission --ignore-not-found
+    
     # 3. Handle Databases and Persistent Volumes
     echo "Patching and removing Persistent Volumes..."
     SERVICES=("user" "post" "comment")
@@ -38,17 +40,17 @@ if [ "$1" == "--clean" ]; then
 
     # 4. ArgoCD Cleanup
     echo "Removing ArgoCD..."
-    kubectl delete -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --ignore-not-found
+    # kubectl delete -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --ignore-not-found
 
     # 5. Namespace wiping
     # We delete namespaces last to ensure all resources inside are gone
     echo "Wiping namespaces..."
-    kubectl delete namespace observability argocd --ignore-not-found --timeout=30s
+    # kubectl delete namespace observability argocd --ignore-not-found --timeout=30s
     echo "--- Clean complete ---"
     exit 0
 fi
 
-kubectl apply -f k8s/namespaces.yaml
+# kubectl apply -f k8s/namespaces.yaml
 
 # Check if Metrics Server is installed, if not, install it
 if ! kubectl get deployment metrics-server -n kube-system > /dev/null 2>&1; then
@@ -83,10 +85,10 @@ fi
 if [ "$1" == "--local" ]; then
     # 3. Build the API image locally
     echo "--- Building Docker Image ---"
-    docker build -t user-api:local ./user-api
-    docker build -t post-api:local ./post-api
+    # docker build -t user-api:local ./user-api
+    # docker build -t post-api:local ./post-api
     docker build -t comment-api:local ./comment-api
-    docker build -t auth-api:local ./auth-api
+    # docker build -t auth-api:local ./auth-api
 
 fi
 
@@ -112,9 +114,9 @@ fi
 
 
 # 3. Check/Install ArgoCD
-if ! kubectl get namespace argocd_toutvabien > /dev/null 2>&1; then
+if ! kubectl get namespace argocd > /dev/null 2>&1; then
 
-    # kubectl create namespace argocd
+    kubectl create namespace argocd
 
     echo "--- Installing ArgoCD ---"
     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side
@@ -144,8 +146,8 @@ else
     echo "--- ArgoCD: OK ---"
 fi
 
-# 4. Create Secrets from your .env file
-echo "--- Syncing Secrets from .env ---"
+# # 4. Create Secrets from your .env file
+# echo "--- Syncing Secrets from .env ---"
 
 kubectl create secret generic "user-api-secrets" --from-env-file="./User-API/.env" --dry-run=client -o yaml | \
 kubeseal --format yaml > k8s/secrets/user-api-sealed.yaml
@@ -164,21 +166,22 @@ echo "--- Deploying to Kubernetes ---"
 # Run this to install all required Prometheus Operator CRDs directly
 
 # Monitoring Coreos CRDs
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagerconfigs.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagers.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-probes.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusagents.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheuses.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusrules.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-scrapeconfigs.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml
-kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-thanosrulers.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagerconfigs.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-alertmanagers.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-probes.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusagents.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheuses.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-prometheusrules.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-scrapeconfigs.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml
+# kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/charts/crds/crds/crd-thanosrulers.yaml
 
 
 # You must have the 'kustomize' standalone binary installed for this
 # This renders the Helm charts FIRST, then applies the result to K8s
-kustomize build k8s/ --enable-helm | kubectl apply -f -
+# kustomize build k8s/ --enable-helm | kubectl apply -f -
+kubectl apply -k k8s/
 echo "--- Deployment Complete ---"
 echo "Check status with: kubectl get pods"
 echo "Watch scaling with: kubectl get hpa -w"
