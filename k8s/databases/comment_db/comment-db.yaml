@@ -15,8 +15,17 @@ spec:
       containers:
       - name: postgres
         image: postgres:17-alpine
-        env:
+        imagePullPolicy: IfNotPresent
 
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"      # 1/4 of a core
+          limits:
+            memory: "512Mi"
+            cpu: "500m"      # 1/2 of a core
+
+        env:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -34,6 +43,7 @@ spec:
             secretKeyRef:
               name: comment-api-secrets
               key: POSTGRES_DB_NAME
+              
         ports:
         - containerPort: 5432
         volumeMounts:
