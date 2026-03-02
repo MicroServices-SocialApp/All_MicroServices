@@ -5,13 +5,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     # --- OPENTELEMETRY CONFIG ---
-    nginx.ingress.kubernetes.io/enable-opentelemetry: "true"
-    # This name shows up as the Service Name in Tempo for the Ingress part of the trace
-    nginx.ingress.kubernetes.io/opentelemetry-operation-name: "ingress-nginx"
-    # If your app already started a trace, NGINX will join it rather than starting a new one
-    nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span: "true"
-    nginx.ingress.kubernetes.io/otlp-collector-host: "otel-collector.observability.svc.cluster.local"
-    nginx.ingress.kubernetes.io/otlp-collector-port: "4317"
+    # nginx.ingress.kubernetes.io/enable-opentelemetry: "true"
+    # # This name shows up as the Service Name in Tempo for the Ingress part of the trace
+    # nginx.ingress.kubernetes.io/opentelemetry-operation-name: "ingress-nginx"
+    # # If your app already started a trace, NGINX will join it rather than starting a new one
+    # nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span: "true"
+    # nginx.ingress.kubernetes.io/otlp-collector-host: "otel-collector.observability.svc.cluster.local"
+    # nginx.ingress.kubernetes.io/otlp-collector-port: "4317"
 spec:
   ingressClassName: nginx
   rules:

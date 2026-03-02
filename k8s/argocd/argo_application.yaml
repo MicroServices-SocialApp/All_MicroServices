@@ -14,10 +14,6 @@ spec:
     
     # 3. The branch to track
     targetRevision: main
-
-    # kustomize:
-    #   # This is the equivalent of --enable-helm
-    #   helmCharts: true
   
   destination:
     # Deploy to the cluster ArgoCD is running in
