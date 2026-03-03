@@ -31,4 +31,4 @@ spec:
         - name: DATABASE_URL
           value: "postgresql+asyncpg://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@user-db:5432/$(POSTGRES_DB)"
       restartPolicy: OnFailure
-  backoffLimit: 4
+  backoffLimit: 10
