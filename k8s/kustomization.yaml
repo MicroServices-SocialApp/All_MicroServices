@@ -38,7 +38,7 @@ images:
   newTag: 0f6bef4e3d221c93c9cba8b4a4ba2a1ca1a98511
 - name: louischatain25/comment-api
   newName: louischatain25/comment-api
-  newTag: ffb84cca02af4eeb5c63d8e43af7b33ee6aa3d42
+  newTag: ec3ff86c1538175b288d43c8b327374cdec8822c
 - name: louischatain25/post-api
   newName: louischatain25/post-api
   newTag: fda84bc3658c4d5e894834e0b676a4dfb41e645c
